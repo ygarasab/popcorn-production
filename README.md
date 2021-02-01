@@ -4,7 +4,7 @@ Implementação de uma simulação de um processo de produção de pipoca em que
 
 Integrantes da equipe:
 
-- Giovanne César Osório de Souza ([@](https://github.com/GigasMesh))
-- Guilherme Eiji Enomoto Hantani ([@](https://github.com/guitani))
+- Giovanne César Osório de Souza ([@GigasMesh](https://github.com/GigasMesh))
+- Guilherme Eiji Enomoto Hantani ([@guitani](https://github.com/guitani))
 - Eduardo Gil Serrão Cardoso ([@ygarasab](https://github.com/ygarasab))
 - Igor Matheus Souza Moreira ([@imatheussm](https://github.com/imatheussm))

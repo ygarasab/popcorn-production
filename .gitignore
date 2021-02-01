@@ -439,4 +439,5 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+# Kile temporary files
 *.kate-swp

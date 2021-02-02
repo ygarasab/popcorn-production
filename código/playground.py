@@ -8,3 +8,6 @@ tempos = pd.read_csv("dados/Mean_Production.csv").to_numpy()
 ambiente = sp.Environment()
 # noinspection SpellCheckingInspection
 processo = sim.Processo(ambiente, tempos)
+
+# to run
+# processo.executa()

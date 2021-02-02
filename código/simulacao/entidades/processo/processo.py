@@ -15,11 +15,29 @@ class Processo(Entidade):
         self.copo = Copo(ambiente, tempos[:, 3], tempos[:, 4])
         self.panela = Panela(ambiente, tempos[:, 0], tempos[:, 2])
 
-    def executa(self):
-        etapas = [self.panela.enche, self.aquecedor.liga, self.panela.aquece, self.copo.enche, self.copo.despeja]
+    def executa(self, ate=None):
+        iteracoes = 0
+        etapas = {
+            "enche panela": self.panela.enche,
+            "liga aquecedor": self.aquecedor.liga,
+            "aquece panela": self.panela.aquece,
+            "enche copo": self.copo.enche,
+            "despeja copo": self.copo.despeja
+        }
 
         while True:
-            for etapa in etapas:
-                self.ambiente.process(etapa())
+            print(f"[Tempo: {round(self.ambiente.now, 2)}] Processo começou.")
 
-            self.ambiente.run()
+            for nome, processo in etapas.items():
+                self.ambiente.process(processo())
+
+                self.ambiente.run()
+
+                print(f" - [Tempo: {round(self.ambiente.now, 2)}] Etapa '{nome}' concluída.")
+
+            iteracoes += 1
+
+            if ate is not None and self.ambiente.now >= ate:
+                break
+
+        print(f"[Tempo: {round(self.ambiente.now, 2)}] Processo finalizado. {iteracoes} pipocas foram produzidas.")

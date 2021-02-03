@@ -11,9 +11,9 @@ class Processo(Entidade):
     def __init__(self, tempos, ambiente=None, verboso=True):
         super().__init__(ambiente, Estados, verboso)
 
-        self.aquecedor = Aquecedor(self.ambiente, tempos[:, 1][tempos[:, 1] < 180])
-        self.copo = Copo(self.ambiente, tempos[:, 3], tempos[:, 4])
-        self.panela = Panela(self.ambiente, tempos[:, 0], tempos[:, 2])
+        self.aquecedor = Aquecedor(self, tempos[:, 1])
+        self.copo = Copo(self, tempos[:, 3], tempos[:, 4])
+        self.panela = Panela(self, tempos[:, 0], tempos[:, 2])
 
         self.porcoes_produzidas = None
 
@@ -44,13 +44,28 @@ class Processo(Entidade):
             "liga aquecedor": self.aquecedor.liga,
             "aquece panela": self.panela.aquece,
             "enche copo": self.copo.enche,
-            "despeja copo": self.copo.despeja
+            "despeja copo": self.copo.despeja,
+            "esvazia panela": self.panela.esvazia,
+            "desliga aquecedor": self.aquecedor.desliga
         }
 
         while self.ambiente.now < ate if ate is not None else True:
-            for etapa in etapas.values():
-                self.ambiente.process(etapa())
+            if (
+                    self.panela.panela_vazia.triggered is True and
+                    self.aquecedor.aquecedor_desligado.triggered is True and
+                    self.copo.copo_vazio.triggered is True
+            ):
+                print(f"[Tempo: {round(self.ambiente.now, 2)}] Produção da porção {self.porcoes_produzidas + 1}:")
 
-            self.ambiente.run()
+                self.estado_atual = Estados.EXECUTANDO
 
-            self.porcoes_produzidas += 1
+                for etapa in etapas.values():
+                    self.ambiente.process(etapa())
+
+                self.ambiente.run()
+
+                self.porcoes_produzidas += 1
+
+                self.estado_atual = Estados.PARADO
+            else:
+                raise Exception()

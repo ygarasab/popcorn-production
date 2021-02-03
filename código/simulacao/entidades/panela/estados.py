@@ -5,6 +5,6 @@ import enum
 class Estados(enum.Enum):
     VAZIA = 0
     ENCHENDO = 1
-    OCUPADA = 2
+    CHEIA = 2
     AQUECENDO = 3
     AQUECIDA = 4

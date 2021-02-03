@@ -1,19 +1,19 @@
 import numpy as np
 
 from ... import verificacoes
-from ..entidade import Entidade
+from ..subentidade import SubEntidade
 from .estados import Estados
 
 
 # noinspection SpellCheckingInspection
-class Aquecedor(Entidade):
-    def __init__(self, ambiente, tempos_de_ligacao, verboso=True):
+class Aquecedor(SubEntidade):
+    def __init__(self, entidade, tempos_de_ligacao, verboso=True):
         """
-        :param ambiente: simpy.Environment
+        :param entidade: simulacao.Processo
         :param tempos_de_ligacao: numpy.ndarray
         :param verboso: bool
         """
-        super().__init__(ambiente, Estados, verboso)
+        super().__init__(entidade, Estados, verboso)
 
         self.tempos_de_ligacao = tempos_de_ligacao
         self.aquecedor_desligado, self.aquecedor_ligado = self.ambiente.event().succeed(), self.ambiente.event()
@@ -26,16 +26,17 @@ class Aquecedor(Entidade):
     def tempos_de_ligacao(self, novo_tempos_de_ligacao):
         verificacoes.verifica_numpy_ndarray(tempos_de_ligacao=novo_tempos_de_ligacao)
 
-        self.__tempos_de_ligacao = novo_tempos_de_ligacao
+        self.__tempos_de_ligacao = self._filtra_outliers(novo_tempos_de_ligacao)
 
     @property
     def tempo_de_ligacao(self):
         return np.random.choice(self.tempos_de_ligacao)
 
     def liga(self):
-        yield self.aquecedor_desligado
+        yield self.aquecedor_desligado & self.entidade.panela.panela_cheia
 
         self.aquecedor_desligado = self.ambiente.event()
+        self.estado_atual = Estados.LIGANDO
 
         yield self.ambiente.timeout(self.tempo_de_ligacao)
 
@@ -44,7 +45,7 @@ class Aquecedor(Entidade):
         self.aquecedor_ligado.succeed()
 
     def desliga(self):
-        yield self.aquecedor_ligado
+        yield self.aquecedor_ligado & self.entidade.copo.copo_cheio
 
         self.aquecedor_ligado = self.ambiente.event()
         self.estado_atual = Estados.DESLIGADO

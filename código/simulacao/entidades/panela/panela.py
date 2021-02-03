@@ -16,7 +16,7 @@ class Panela(Entidade):
         super().__init__(ambiente, Estados, verboso)
 
         self.tempos_de_enchimento, self.tempos_de_aquecimento = tempos_de_enchimento, tempos_de_aquecimento
-        # self.panela_vazia, self.panela_cheia = self.ambiente.event().succeed(), self.ambiente.event()
+        self.panela_vazia, self.panela_cheia = self.ambiente.event().succeed(), self.ambiente.event()
 
     @property
     def tempos_de_enchimento(self):

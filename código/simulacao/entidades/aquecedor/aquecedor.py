@@ -16,7 +16,7 @@ class Aquecedor(Entidade):
         super().__init__(ambiente, Estados, verboso)
 
         self.tempos_de_ligacao = tempos_de_ligacao
-        # self.aquecedor_desligado, self.aquecedor_ligado = self.ambiente.event().succeed(), self.ambiente.event()
+        self.aquecedor_desligado, self.aquecedor_ligado = self.ambiente.event().succeed(), self.ambiente.event()
 
     @property
     def tempos_de_ligacao(self):
@@ -33,16 +33,20 @@ class Aquecedor(Entidade):
         return np.random.choice(self.tempos_de_ligacao)
 
     def liga(self):
-        # yield self.aquecedor_desligado
+        yield self.aquecedor_desligado
+
+        self.aquecedor_desligado = self.ambiente.event()
+
         yield self.ambiente.timeout(self.tempo_de_ligacao)
 
         self.estado_atual = Estados.LIGADO
 
-        # self.aquecedor_ligado.succeed()
+        self.aquecedor_ligado.succeed()
 
     def desliga(self):
-        # yield self.aquecedor_ligado
+        yield self.aquecedor_ligado
 
+        self.aquecedor_ligado = self.ambiente.event()
         self.estado_atual = Estados.DESLIGADO
 
-        # self.aquecedor_desligado.succeed()
+        self.aquecedor_desligado.succeed()

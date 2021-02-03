@@ -1,6 +1,5 @@
 import enum as e
 import simpy as sp
-import sys
 
 
 # noinspection SpellCheckingInspection
@@ -15,10 +14,12 @@ class Entidade:
 
     @ambiente.setter
     def ambiente(self, novo_ambiente):
-        if not isinstance(novo_ambiente, sp.Environment):
+        if novo_ambiente is None:
+            self.__ambiente = sp.Environment()
+        elif not isinstance(novo_ambiente, sp.Environment):
             raise TypeError("O atributo ambiente precisa receber uma instância de simpy.Environment.")
-
-        self.__ambiente = novo_ambiente
+        else:
+            self.__ambiente = novo_ambiente
 
     @property
     def estados(self):
@@ -30,8 +31,6 @@ class Entidade:
             raise TypeError("O atributo estados precisa receber um enum.")
 
         self.__estados = novo_estados
-
-        self._imprime(f"Estado atual: {self.estados}.")
 
     @property
     def verboso(self):
@@ -50,7 +49,10 @@ class Entidade:
 
     @estado_atual.setter
     def estado_atual(self, novo_estado):
-        if isinstance(novo_estado, int):
+        if not isinstance(novo_estado, (int, str, self.estados)):
+            raise TypeError(f"O atributo estado_atual precisa receber um objeto do tipo int ou str. Tipo recebido: "
+                            f"{type(novo_estado)}.")
+        elif isinstance(novo_estado, int):
             if novo_estado < 0 or novo_estado >= len(self.estados):
                 raise ValueError(f"O atributo estado_atual precisa receber um valor entre 0 e {len(self.estados)}."
                                  f"Valor recebido: {novo_estado}")
@@ -68,9 +70,11 @@ class Entidade:
                                  f"{novo_estado}.")
 
             self.__estado_atual = novo_estado
-        else:
-            raise TypeError(f"O atributo estado_atual precisa receber um objeto do tipo int ou str. Tipo recebido: "
-                            f"{type(novo_estado)}.")
+
+        self._imprime(f"Estado atual: {self.estado_atual}.")
 
     def _imprime(self, conteudo):
-        print(f"[Tempo: {self.ambiente.now}] [{self.__class__.__name__}] {conteudo}", file=sys.stdout)
+        print(f"   - [Tempo: {round(self.ambiente.now, 2)}] [{self.__class__.__name__}] {conteudo}")
+
+    def recria_ambiente(self):
+        self.ambiente = sp.Environment()

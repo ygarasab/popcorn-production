@@ -16,7 +16,7 @@ class Copo(Entidade):
         super().__init__(ambiente, Estados, verboso)
 
         self.tempos_de_enchimento, self.tempos_de_despejo = tempos_de_enchimento, tempos_de_despejo
-        # self.copo_vazio, self.copo_cheio = self.ambiente.event().succeed(), self.ambiente.event()
+        self.copo_vazio, self.copo_cheio = self.ambiente.event().succeed(), self.ambiente.event()
 
     @property
     def tempos_de_enchimento(self):
@@ -47,23 +47,25 @@ class Copo(Entidade):
         return np.random.choice(self.tempos_de_despejo)
 
     def enche(self):
-        # yield self.copo_vazio
+        yield self.copo_vazio
 
-        # self.copo_vazio = self.ambiente.event()
+        self.copo_vazio = self.ambiente.event()
         self.estado_atual = Estados.ENCHENDO
 
         yield self.ambiente.timeout(self.tempo_de_enchimento)
 
         self.estado_atual = Estados.CHEIO
 
-        # self.copo_cheio.succeed()
+        self.copo_cheio.succeed()
 
     def despeja(self):
-        # yield self.copo_cheio
+        yield self.copo_cheio
 
-        # self.copo_cheio = self.ambiente.event()
+        self.copo_cheio = self.ambiente.event()
         self.estado_atual = Estados.DESPEJANDO
 
         yield self.ambiente.timeout(self.tempo_de_despejo)
 
         self.estado_atual = Estados.VAZIO
+
+        self.copo_vazio.succeed()

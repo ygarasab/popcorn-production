@@ -11,9 +11,9 @@ class Processo(Entidade):
     def __init__(self, tempos, ambiente=None, verboso=True):
         super().__init__(ambiente, Estados, verboso)
 
-        self.aquecedor = Aquecedor(self, tempos[:, 1])
-        self.copo = Copo(self, tempos[:, 3], tempos[:, 4])
-        self.panela = Panela(self, tempos[:, 0], tempos[:, 2])
+        self.aquecedor = Aquecedor(self, tempos_de_ligacao=tempos[:, 1], quantidade=1)
+        self.copo = Copo(self, tempos_de_enchimento=tempos[:, 3], tempos_de_despejo=tempos[:, 4], quantidade=1)
+        self.panela = Panela(self, tempos_de_enchimento=tempos[:, 0], tempos_de_aquecimento=tempos[:, 2], quantidade=2)
 
         self.porcoes_produzidas = None
 
@@ -38,6 +38,8 @@ class Processo(Entidade):
             if hasattr(self, entidade):
                 exec(f"self.{entidade}.ambiente = self.ambiente")
 
+        self.porcoes_produzidas = 0
+
     def executa(self, ate=None):
         self.porcoes_produzidas, etapas = 0, {
             "enche panela": self.panela.enche,
@@ -51,9 +53,9 @@ class Processo(Entidade):
 
         while self.ambiente.now < ate if ate is not None else True:
             if (
-                    self.panela.panela_vazia.triggered is True and
-                    self.aquecedor.aquecedor_desligado.triggered is True and
-                    self.copo.copo_vazio.triggered is True
+                    self.panela.vazia.triggered is True and
+                    self.aquecedor.desligado.triggered is True and
+                    self.copo.vazio.triggered is True
             ):
                 print(f"[Tempo: {round(self.ambiente.now, 2)}] Produção da porção {self.porcoes_produzidas + 1}:")
 

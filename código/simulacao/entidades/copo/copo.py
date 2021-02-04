@@ -7,16 +7,28 @@ from .estados import Estados
 
 # noinspection SpellCheckingInspection
 class Copo(SubEntidade):
-    def __init__(self, entidade, tempos_de_enchimento, tempos_de_despejo, verboso=True):
+    def __init__(self, entidade, tempos_de_enchimento, tempos_de_despejo, quantidade, verboso=True):
         """
         :param entidade: simulacao.Processo
         :param tempos_de_enchimento: float
         :param verboso: bool
         """
-        super().__init__(entidade, Estados, verboso)
+        super().__init__(entidade, Estados, quantidade, verboso)
 
         self.tempos_de_enchimento, self.tempos_de_despejo = tempos_de_enchimento, tempos_de_despejo
-        self.copo_vazio, self.copo_cheio = self.ambiente.event().succeed(), self.ambiente.event()
+        self.vazio, self.cheio = self.ambiente.event().succeed(), self.ambiente.event()
+
+    @property
+    def ambiente(self):
+        # noinspection PyArgumentList
+        return SubEntidade.ambiente.fget(self)
+
+    @ambiente.setter
+    def ambiente(self, novo_ambiente):
+        # noinspection PyArgumentList
+        SubEntidade.ambiente.fset(self, novo_ambiente)
+
+        self.vazio, self.cheio = self.ambiente.event().succeed(), self.ambiente.event()
 
     @property
     def tempos_de_enchimento(self):
@@ -47,26 +59,26 @@ class Copo(SubEntidade):
         return np.random.choice(self.tempos_de_despejo)
 
     def enche(self):
-        yield self.copo_vazio & self.entidade.panela.panela_aquecida
+        yield self.vazio & self.entidade.panela.aquecida
 
-        self.copo_vazio = self.ambiente.event()
+        self.vazio = self.ambiente.event()
         self.estado_atual = Estados.ENCHENDO
 
         yield self.ambiente.timeout(self.tempo_de_enchimento)
 
         self.estado_atual = Estados.CHEIO
 
-        self.copo_cheio.succeed()
+        self.cheio.succeed()
         self.entidade.panela.esvazia()
 
     def despeja(self):
-        yield self.copo_cheio & self.entidade.panela.panela_vazia & self.entidade.aquecedor.aquecedor_desligado
+        yield self.cheio & self.entidade.panela.vazia & self.entidade.aquecedor.desligado
 
-        self.copo_cheio = self.ambiente.event()
+        self.cheio = self.ambiente.event()
         self.estado_atual = Estados.DESPEJANDO
 
         yield self.ambiente.timeout(self.tempo_de_despejo)
 
         self.estado_atual = Estados.VAZIO
 
-        self.copo_vazio.succeed()
+        self.vazio.succeed()

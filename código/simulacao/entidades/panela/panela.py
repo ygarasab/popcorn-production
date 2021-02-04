@@ -7,17 +7,32 @@ from .estados import Estados
 
 # noinspection SpellCheckingInspection
 class Panela(SubEntidade):
-    def __init__(self, entidade, tempos_de_enchimento, tempos_de_aquecimento, verboso=True):
+    def __init__(self, entidade, tempos_de_enchimento, tempos_de_aquecimento, quantidade, verboso=True):
         """
         :param entidade: simulacao.Processo
         :param tempos_de_enchimento: float
         :param verboso: bool
         """
-        super().__init__(entidade, Estados, verboso)
+        super().__init__(entidade, Estados, quantidade, verboso)
 
         self.tempos_de_enchimento, self.tempos_de_aquecimento = tempos_de_enchimento, tempos_de_aquecimento
-        self.panela_vazia, self.panela_cheia = self.ambiente.event().succeed(), self.ambiente.event()
-        self.panela_aquecida = self.ambiente.event()
+
+        self.vazia = self.ambiente.event().succeed()
+        self.cheia = self.ambiente.event()
+        self.aquecida = self.ambiente.event()
+
+    @property
+    def ambiente(self):
+        # noinspection PyArgumentList
+        return SubEntidade.ambiente.fget(self)
+
+    @ambiente.setter
+    def ambiente(self, novo_ambiente):
+        # noinspection PyArgumentList
+        SubEntidade.ambiente.fset(self, novo_ambiente)
+
+        self.vazia, self.cheia = self.ambiente.event().succeed(), self.ambiente.event()
+        self.aquecida = self.ambiente.event()
 
     @property
     def tempos_de_enchimento(self):
@@ -48,32 +63,32 @@ class Panela(SubEntidade):
         return np.random.choice(self.tempos_de_aquecimento)
 
     def enche(self):
-        yield self.panela_vazia
+        yield self.vazia
 
-        self.panela_vazia = self.ambiente.event()
+        self.vazia = self.ambiente.event()
         self.estado_atual = Estados.ENCHENDO
 
         yield self.ambiente.timeout(self.tempo_de_enchimento)
 
         self.estado_atual = Estados.CHEIA
 
-        self.panela_cheia.succeed()
+        self.cheia.succeed()
 
     def aquece(self):
-        yield self.panela_cheia & self.entidade.aquecedor.aquecedor_ligado
+        yield self.cheia & self.entidade.aquecedor.ligado
 
-        self.panela_cheia = self.ambiente.event()
+        self.cheia = self.ambiente.event()
         self.estado_atual = Estados.AQUECENDO
 
         yield self.ambiente.timeout(self.tempo_de_aquecimento)
 
         self.estado_atual = Estados.AQUECIDA
-        self.panela_aquecida.succeed()
+        self.aquecida.succeed()
 
     def esvazia(self):
-        yield self.panela_aquecida & self.entidade.copo.copo_cheio & self.entidade.aquecedor.aquecedor_desligado
+        yield self.aquecida & self.entidade.copo.cheio & self.entidade.aquecedor.desligado
 
-        self.panela_aquecida = self.ambiente.event()
+        self.aquecida = self.ambiente.event()
         self.estado_atual = Estados.VAZIA
 
-        self.panela_vazia.succeed()
+        self.vazia.succeed()

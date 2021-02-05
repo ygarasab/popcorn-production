@@ -68,6 +68,7 @@ def executa_processo(tempos, limite_de_tempo, execucoes):
     for coluna in ["Execução", "Porções produzidas", "Minutos decorridos"]:
         tempos_de_producao.loc[:, coluna] = pd.to_numeric(tempos_de_producao.loc[:, coluna])
 
-    sns.lineplot(data=tempos_de_producao, x="Porções produzidas", y="Minutos decorridos", hue="Categoria")
+    sns.lineplot(data=tempos_de_producao, x="Porções produzidas", y="Minutos decorridos", hue="Categoria", ax=eixo)
+    eixo.axvline(x=34, color="k", linestyle="--")
 
     return figura, tempos_de_producao

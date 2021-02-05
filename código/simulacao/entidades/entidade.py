@@ -71,7 +71,8 @@ class Entidade:
 
             self.__estado_atual = novo_estado
 
-        self._imprime(f"Estado atual: {str(self.estado_atual).split('.')[1].lower()}.")
+        if self.verboso is True:
+            self._imprime(f"Estado atual: {str(self.estado_atual).split('.')[1].lower()}.")
 
     def _imprime(self, conteudo):
         print(f"   - [Tempo: {round(self.ambiente.now, 2)}] [{self.__class__.__name__}] {conteudo}")

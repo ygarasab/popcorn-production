@@ -7,13 +7,13 @@ from .estados import Estados
 
 # noinspection SpellCheckingInspection
 class Copo(SubEntidade):
-    def __init__(self, entidade, tempos_de_enchimento, tempos_de_despejo, quantidade, verboso=True):
+    def __init__(self, entidade, *, tempos_de_enchimento, tempos_de_despejo, verboso=True):
         """
         :param entidade: simulacao.Processo
         :param tempos_de_enchimento: float
         :param verboso: bool
         """
-        super().__init__(entidade, Estados, quantidade, verboso)
+        super().__init__(entidade, Estados, verboso)
 
         self.tempos_de_enchimento, self.tempos_de_despejo = tempos_de_enchimento, tempos_de_despejo
         self.vazio, self.cheio = self.ambiente.event().succeed(), self.ambiente.event()

@@ -7,13 +7,13 @@ from .estados import Estados
 
 # noinspection SpellCheckingInspection
 class Aquecedor(SubEntidade):
-    def __init__(self, entidade, *, tempos_de_ligacao, quantidade, verboso=True):
+    def __init__(self, entidade, *, tempos_de_ligacao, verboso=True):
         """
         :param entidade: simulacao.Processo
         :param tempos_de_ligacao: numpy.ndarray
         :param verboso: bool
         """
-        super().__init__(entidade, Estados, quantidade, verboso)
+        super().__init__(entidade, Estados, verboso)
 
         self.tempos_de_ligacao = tempos_de_ligacao
         self.desligado, self.ligado = self.ambiente.event().succeed(), self.ambiente.event()

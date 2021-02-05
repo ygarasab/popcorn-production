@@ -7,19 +7,20 @@ from .estados import Estados
 
 # noinspection SpellCheckingInspection
 class Panela(SubEntidade):
-    def __init__(self, entidade, tempos_de_enchimento, tempos_de_aquecimento, quantidade, verboso=True):
+    def __init__(self, entidade, *, tempos_de_enchimento, tempos_de_aquecimento, sempre_cheia, verboso=True):
         """
         :param entidade: simulacao.Processo
         :param tempos_de_enchimento: float
         :param verboso: bool
         """
-        super().__init__(entidade, Estados, quantidade, verboso)
+        super().__init__(entidade, Estados, verboso)
+
+        self.sempre_cheia = sempre_cheia
 
         self.tempos_de_enchimento, self.tempos_de_aquecimento = tempos_de_enchimento, tempos_de_aquecimento
 
+        self.aquecida, self.cheia = self.ambiente.event(), self.ambiente.event()
         self.vazia = self.ambiente.event().succeed()
-        self.cheia = self.ambiente.event()
-        self.aquecida = self.ambiente.event()
 
     @property
     def ambiente(self):
@@ -92,3 +93,7 @@ class Panela(SubEntidade):
         self.estado_atual = Estados.VAZIA
 
         self.vazia.succeed()
+
+        if self.sempre_cheia is True:
+            self.vazia = self.ambiente.event()
+            self.estado_atual = Estados.CHEIA

@@ -76,7 +76,7 @@ class Panela(SubEntidade):
         self.cheia.succeed()
 
     def aquece(self):
-        yield self.cheia & self.entidade.aquecedor.ligado
+        yield self.cheia & self.entidade.aquecedor.ligado & self.entidade.copo.vazio
 
         self.cheia = self.ambiente.event()
         self.estado_atual = Estados.AQUECENDO

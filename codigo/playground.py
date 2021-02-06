@@ -5,10 +5,11 @@ import seaborn as sns
 
 from matplotlib import pyplot as plt
 
+# noinspection SpellCheckingInspection
 tempos_coletados = pd.read_csv("dados/Mean_Production.csv").to_numpy()
 
 # noinspection SpellCheckingInspection
-# processo = sim.Processo(tempos_coletados, aquecedor_sempre_ligado=True, panela_sempre_cheia=False)
+processo = sim.Processo(tempos_coletados, aquecedor_sempre_ligado=True, panela_sempre_cheia=False)
 
 # to run
 # processo.executa()
@@ -42,17 +43,17 @@ def executa_processo(tempos, limite_de_tempo, execucoes):
 
             numero_maximo_de_porcoes = max([vetor.size for vetor in vetores])
 
-            for v in range(len(vetores)):
-                while vetores[v].size < numero_maximo_de_porcoes:
-                    ultimo_valor = vetores[v][-1]
-                    vetores[v] = np.append(vetores[v], ultimo_valor)
+            # for v in range(len(vetores)):
+            #     while vetores[v].size < numero_maximo_de_porcoes:
+            #         ultimo_valor = vetores[v][-1]
+            #         vetores[v] = np.append(vetores[v], ultimo_valor)
 
             for v in range(len(vetores)):
                 vetores[v] = pd.DataFrame(np.concatenate(
                     (
-                        np.full((numero_maximo_de_porcoes, 1), categoria),
-                        np.full((numero_maximo_de_porcoes, 1), v),
-                        np.arange(1, numero_maximo_de_porcoes + 1).reshape(-1, 1),
+                        np.full((vetores[v].size, 1), categoria),
+                        np.full((vetores[v].size, 1), v),
+                        np.arange(1, vetores[v].size + 1).reshape(-1, 1),
                         vetores[v].reshape(-1, 1)
                     ), axis=1
                 ), columns=["Categoria", "Execução", "Porções produzidas", "Minutos decorridos"])

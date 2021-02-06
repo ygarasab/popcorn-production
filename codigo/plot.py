@@ -1,24 +1,24 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
 from matplotlib import pyplot as plt
-from simulacao.entidades import SubEntidade
+from matplotlib import ticker as tkr
+from simulacao.entidades.subentidade import SubEntidade
 
 df = pd.read_csv('dados/Mean_Production.csv')
-dados = np.array([[0.0 for i in range(7)]for i in range(5)])
-dados[0] = df['Enchimento da panela'].to_numpy()
-dados[1] = df['Ligação do aquecedor'].to_numpy()
-dados[2] = df['Aquecimento da panela'].to_numpy()
-dados[3] = df['Enchimento do copo'].to_numpy()
-dados[4] = df['Despejo do copo'].to_numpy()
 
-for value in range(len(dados)):
-    dados_filtrados = SubEntidade._filtra_outliers(dados[value])
+for coluna in df.columns:
+    dados_filtrados = SubEntidade._filtra_outliers(df.loc[:, coluna])
     print(dados_filtrados)
     figura, eixo = plt.subplots(1, 1)
-    plt.hist(dados_filtrados, edgecolor='black', linewidth=1.2, bins=4)
-    plt.ylabel('Número de amostras')
-    plt.xlabel('Tempo de duração')
-    figura.savefig("%d.pdf" %value)
+    # eixo.hist(dados_filtrados, edgecolor='black', linewidth=1.2, bins=4)
+    sns.distplot(dados_filtrados, bins=4, kde=False)
+    eixo.set_xlabel("")
+    eixo.set_ylabel("")
+    eixo.set_ylim(0, 5)
+    eixo.yaxis.set_major_formatter(tkr.FormatStrFormatter('%d'))
+    eixo.yaxis.set_major_locator(tkr.MaxNLocator(integer=True))
+    figura.savefig(f"{coluna}.pdf")
 
 
 

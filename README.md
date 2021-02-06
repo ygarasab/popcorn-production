@@ -1,5 +1,7 @@
 # Produção de pipoca
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ygarasab/popcorn-production/master?filepath=Simula%C3%A7%C3%A3o.ipynb)
+
 Implementação de uma simulação de um processo de produção de pipoca em que tentativas de melhorá-lo são feitas, proposto na disciplina Simulação Discreta ministrada pelo prof. Dr. Filipe de Oliveira Saraiva ([@filipesaraiva](https://github.com/filipesaraiva)) sob o Curso de Bacharelado em Ciência da Computação na Universidade Federal do Pará.
 
 Integrantes da equipe:
